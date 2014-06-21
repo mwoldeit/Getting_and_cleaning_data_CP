@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>Study design</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<h1>Study design</h1>
+
+<p><strong>Data collection</strong></p>
+
+<ul>
+<li>The data was downloaded from: (<a href="https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip">https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip</a>), and extracted into the working directory (yielding <em>./UCI HAR Dataset/</em>, as data directory).<br/></li>
+<li> Description of the original measured features can be found within the <em>./UCI HAR Dataset/features_info.txt</em>, <em>./UCI HAR Dataset/features.txt</em> and <em>./UCI HAR Dataset/README.txt</em> that comes with the data.<br/></li>
+</ul>
+
+<p><strong>Summary choices</strong></p>
+
+<ul>
+<li>Summary variables included in the tidy dataset were all estimated means and standard deviations of the original signals. Only features with <em>mean()</em> or <em>std()</em>
+within the feature names were chosen, hence the additionaly, angle()-based means were not included.</li>
+<li>These estimates from the original dataset were summarized by calculating their average in dependence of <em>activity</em> and <em>subject</em>.</li>
+</ul>
+
+<p><strong>Experimental study design</strong></p>
+
+<ul>
+<li>The training and test data set were loaded into R from files: <em>./UCI HAR Dataset  /train/X_train.txt</em> and <em>./UCI HAR Dataset/test/X_test.txt</em>, respectively.<br/></li>
+<li>Variables <em>subject</em> and <em>activity</em> were added to both sets, loading the <em>subject_test.txt</em>/<em>subject_train.txt</em> files and the <em>y_test.txt</em>/<em>y_train.txt</em> from their respective subdirectory into R.<br/></li>
+<li>Both datasets were combined by appending to the columns.<br/></li>
+<li>Feature Labels were loaded from <em>./UCI HAR Dataset/features.txt</em> and used as column names. These were directly integrated into the newly loaded sets as col.names, thereby undergoing <em>check.names</em>, which transforms names that are not very valuable for R into adequate ones (using the function <em>make.names()</em>).<br/></li>
+<li>The merged dataset was subsetted for Feature Labels (column names) that contained <em>mean()</em> or <em>std()</em> as a substring.<br/></li>
+<li>The merged and subsetted data set was summarized by combinations(interactions) of factors <em>subject</em> and <em>activity</em> using the mean function. This represents the tidy data set.<br/></li>
+<li>The tidy data was written to <em>./tidy_data.txt</em>, with &ldquo;,&rdquo; as separator.</li>
+</ul>
+
+<h1>Code book</h1>
+
+<p><strong>run_analysis.R</strong></p>
+
+<table><thead>
+<tr>
+<th align="left"><em>variables</em></th>
+<th align="left"><em>description</em></th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">train.dir</td>
+<td align="left">subdirectory containing the <em>train dataset</em></td>
+</tr>
+<tr>
+<td align="left">test.dir</td>
+<td align="left">subdirectory containing the <em>test dataset</em></td>
+</tr>
+<tr>
+<td align="left">activity.labels</td>
+<td align="left">factor levels for activity variable according to <em>activity.txt</em></td>
+</tr>
+<tr>
+<td align="left">feature.labels</td>
+<td align="left">feature names corresponding to the coulumn names in both datasets   according to <em>features.txt</em></td>
+</tr>
+<tr>
+<td align="left">test.data</td>
+<td align="left">the original test set with additional variables <em>subject</em> and <em>activity</em></td>
+</tr>
+<tr>
+<td align="left">train.data</td>
+<td align="left">the original train set with additional variables <em>subject</em> and <em>activity</em></td>
+</tr>
+<tr>
+<td align="left">merged.data</td>
+<td align="left">the train and test dataset merged by features (i.e. columns)</td>
+</tr>
+<tr>
+<td align="left">mstd.vind</td>
+<td align="left">indices of all feature variables that estimated mean() or std() of the signals</td>
+</tr>
+<tr>
+<td align="left">add.ind</td>
+<td align="left">indices of additional variables <em>subject</em> and <em>activity</em> in both sets</td>
+</tr>
+<tr>
+<td align="left">tidy.data</td>
+<td align="left">the tidy data set, i.e. the dataset that only contains the summarized data</td>
+</tr>
+</tbody></table>
+
+<p><strong>tidy_data.txt</strong></p>
+
+<p><em>tidy_data.txt</em> contains a data frame with the summarized variables, each of which can be easily deduced from the <em>features.txt</em> and <em>features_info.txt</em>, that come along the downloaded data;</p>
+
+<p><strong>Note:</strong> all variables have been normalized and range within [-1, 1]; beacuse of the normalization they are unit-less</p>
+
+<table><thead>
+<tr>
+<th align="right"><code>tidy.data</code> <em>variables</em></th>
+<th align="right"><em>description</em></th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="right">subject</td>
+<td align="right">subject id</td>
+</tr>
+<tr>
+<td align="right">activity</td>
+<td align="right">activities</td>
+</tr>
+<tr>
+<td align="right">tBodyAcc.mean&hellip;X</td>
+<td align="right"><strong>mean() values</strong></td>
+</tr>
+<tr>
+<td align="right">tBodyAcc.mean&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAcc.mean&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tGravityAcc.mean&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tGravityAcc.mean&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tGravityAcc.mean&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccJerk.mean&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccJerk.mean&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccJerk.mean&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyro.mean&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyro.mean&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyro.mean&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroJerk.mean&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroJerk.mean&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroJerk.mean&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccMag.mean..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tGravityAccMag.mean..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccJerkMag.mean..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroMag.mean..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroJerkMag.mean..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAcc.mean&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAcc.mean&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAcc.mean&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAccJerk.mean&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAccJerk.mean&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAccJerk.mean&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyGyro.mean&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyGyro.mean&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyGyro.mean&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAccMag.mean..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyBodyAccJerkMag.mean..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyBodyGyroMag.mean..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyBodyGyroJerkMag.mean..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAcc.mean&hellip;X.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAcc.mean&hellip;Y.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAcc.mean&hellip;Z.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tGravityAcc.mean&hellip;X.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tGravityAcc.mean&hellip;Y.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tGravityAcc.mean&hellip;Z.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccJerk.mean&hellip;X.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccJerk.mean&hellip;Y.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccJerk.mean&hellip;Z.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyro.mean&hellip;X.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyro.mean&hellip;Y.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyro.mean&hellip;Z.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroJerk.mean&hellip;X.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroJerk.mean&hellip;Y.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroJerk.mean&hellip;Z.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccMag.mean&hellip;1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tGravityAccMag.mean&hellip;1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccJerkMag.mean&hellip;1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroMag.mean&hellip;1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroJerkMag.mean&hellip;1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAcc.mean&hellip;X.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAcc.mean&hellip;Y.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAcc.mean&hellip;Z.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAccJerk.mean&hellip;X.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAccJerk.mean&hellip;Y.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAccJerk.mean&hellip;Z.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyGyro.mean&hellip;X.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyGyro.mean&hellip;Y.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyGyro.mean&hellip;Z.1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAccMag.mean&hellip;1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyBodyAccJerkMag.mean&hellip;1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyBodyGyroMag.mean&hellip;1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyBodyGyroJerkMag.mean&hellip;1</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAcc.std&hellip;X</td>
+<td align="right"><strong>std() values</strong></td>
+</tr>
+<tr>
+<td align="right">tBodyAcc.std&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAcc.std&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tGravityAcc.std&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tGravityAcc.std&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tGravityAcc.std&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccJerk.std&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccJerk.std&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccJerk.std&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyro.std&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyro.std&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyro.std&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroJerk.std&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroJerk.std&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroJerk.std&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccMag.std..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tGravityAccMag.std..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyAccJerkMag.std..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroMag.std..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">tBodyGyroJerkMag.std..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAcc.std&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAcc.std&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAcc.std&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAccJerk.std&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAccJerk.std&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAccJerk.std&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyGyro.std&hellip;X</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyGyro.std&hellip;Y</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyGyro.std&hellip;Z</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyAccMag.std..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyBodyAccJerkMag.std..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyBodyGyroMag.std..</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="right">fBodyBodyGyroJerkMag.std..</td>
+<td align="right"></td>
+</tr>
+</tbody></table>
+
+</body>
+
+</html>
+
